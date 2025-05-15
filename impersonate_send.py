@@ -5,7 +5,7 @@ import json
 w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
 
 # Endereço a ser impersonado
-target_address = "0x0f87243a64FFfaFa91f50Fa5a8ee918430A38fBA"
+target_address = "0xF977814e90dA44bFA03b6295A0616a897441aceC"
 
 # Endereço que receberá os ETH
 receiver = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
