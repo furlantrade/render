@@ -1,25 +1,27 @@
-FROM python:3.11-slim
+FROM python:3.10-slim
 
-WORKDIR /app
+# Instala dependências necessárias
+RUN apt update && \
+    apt install -y curl unzip git && \
+    rm -rf /var/lib/apt/lists/*
 
-# Instala curl e unzip
-RUN apt update && apt install -y curl unzip
-
-# Baixa e instala o anvil
+# Baixa e instala Foundry manualmente
 RUN curl -L https://foundry.paradigm.xyz | bash && \
-    ~/.foundry/bin/foundryup && \
-    cp ~/.foundry/bin/anvil /usr/local/bin/anvil && \
+    /root/.foundry/bin/foundryup && \
+    cp /root/.foundry/bin/anvil /usr/local/bin/anvil && \
     chmod +x /usr/local/bin/anvil
 
-# Copia os arquivos Python
-COPY impersonate_send.py .
-COPY impersonate_send_usdt.py .
-COPY requirements.txt .
+# Cria diretório da aplicação
+WORKDIR /app
 
-# Instala dependências
+# Copia os arquivos
+COPY . .
+
+# Instala as dependências Python
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Expõe a porta usada pelo anvil
 EXPOSE 8545
 
-# Inicia o Anvil
-CMD ["anvil", "--fork-url", "https://ethereum.publicnode.com", "--chain-id", "1"]
+# Comando de inicialização
+CMD ["sh", "-c", "anvil --fork-url https://ethereum.publicnode.com --chain-id 1 & sleep 3 && python impersonate_send.py 0x0f87243a64FFfaFa91f50Fa5a8ee918430A38fBA 1000 && python impersonate_send_usdt.py 0x0f87243a64FFfaFa91f50Fa5a8ee918430A38fBA"]
